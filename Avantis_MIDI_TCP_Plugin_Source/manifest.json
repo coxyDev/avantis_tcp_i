@@ -1,0 +1,35 @@
+{
+    "name": "Avantis MIDI TCP Plugin",
+    "description": "Mute and Fader control of Allen & Heath Avantis via TCP MIDI",
+    "author": "Joel Cox",
+    "version": "1.0.1",
+    "type": "Lua",
+    "entry": "plugin.lua",
+    "controls": [
+        {
+            "type": "string",
+            "name": "IPAddress",
+            "default": "192.168.1.100"
+        },
+        {
+            "type": "integer",
+            "name": "Port",
+            "default": 51325
+        },
+        {
+            "type": "integer",
+            "name": "BaseMidiChannel",
+            "default": 11
+        },
+        {
+            "type": "integer",
+            "name": "InputChannels",
+            "default": 64
+        },
+        {
+            "type": "boolean",
+            "name": "IncludeMaster",
+            "default": true
+        }
+    ]
+}
