@@ -1,76 +1,85 @@
+-- Basic Framework Plugin
+-- by QSC
+-- October 2020
 
--- Avantis MIDI TCP Plugin
--- Controls Mute and Fader for 64 Inputs + Mains L/R via TCP MIDI
+-- Information block for the plugin
+--[[ #include "info.lua" ]]
 
--- Plugin-defined controls
-tcp = TcpSocket.New()
-
-function sendMidi(bytes)
-  if tcp:IsConnected() then
-    tcp:Write(string.char(table.unpack(bytes)))
-  end
+-- Define the color of the plugin object in the design
+function GetColor(props)
+  return { 102, 102, 102 }
 end
 
-function buildMuteMessage(channelIndex, on)
-  local base = Controls.BaseMidiChannel.Value
-  local ch = channelIndex - 1
-  local status = 0x90 + base
-  local velocity = on and 0x7F or 0x3F
-  return {status, ch, velocity, ch, 0x00}
+-- The name that will initially display when dragged into a design
+function GetPrettyName(props)
+  return "My First Plugin, version " .. PluginInfo.Version
 end
 
-function buildFaderNRPN(channelIndex, level)
-  local base = Controls.BaseMidiChannel.Value
-  local ch = channelIndex - 1
-  local status = 0xB0 + base
-  return {
-    status, 0x63, ch,
-    status, 0x62, 0x11,
-    status, 0x06, level
-  }
+-- Optional function used if plugin has multiple pages
+PageNames = { "Control", "Setup" }  --List the pages within the plugin
+function GetPages(props)
+  local pages = {}
+  --[[ #include "pages.lua" ]]
+  return pages
 end
 
-MuteControls = {}
-FaderControls = {}
-
-function InitControls()
-  local n = Controls.InputChannels.Value
-  for i = 1, n do
-    MuteControls[i] = Controls.CreateToggle("Mute_" .. i, false)
-    FaderControls[i] = Controls.CreateFloat("Fader_" .. i, 0.5)
-  end
-  if Controls.IncludeMaster.Value then
-    MuteControls["Master"] = Controls.CreateToggle("Mute_Master", false)
-    FaderControls["Master"] = Controls.CreateFloat("Fader_Master", 0.5)
-  end
+-- Optional function to define model if plugin supports more than one model
+function GetModel(props)
+  local model = {}
+  --[[ #include "model.lua" ]]
+ return model
 end
 
-InitControls()
-
-function Connect()
-  tcp:Connect(Controls.IPAddress.String, Controls.Port.Value)
+-- Define User configurable Properties of the plugin
+function GetProperties()
+  local props = {}
+  --[[ #include "properties.lua" ]]
+  return props
 end
 
-Controls.IPAddress.EventHandler = Connect
-Controls.Port.EventHandler = Connect
-
-for i, ctrl in pairs(MuteControls) do
-  ctrl.EventHandler = function()
-    local msg = buildMuteMessage(i == "Master" and 49 or i, ctrl.Boolean)
-    sendMidi(msg)
-  end
+-- Optional function to define pins on the plugin that are not connected to a Control
+function GetPins(props)
+  local pins = {}
+  --[[ #include "pins.lua" ]]
+  return pins
 end
 
-for i, ctrl in pairs(FaderControls) do
-  ctrl.EventHandler = function()
-    local level = math.floor(ctrl.Value * 127)
-    local msg = buildFaderNRPN(i == "Master" and 49 or i, level)
-    sendMidi(msg)
-  end
+-- Optional function to update available properties when properties are altered by the user
+function RectifyProperties(props)
+  --[[ #include "rectify_properties.lua" ]]
+  return props
 end
 
-tcp.Data = function(sock, data)
-  -- Feedback parsing stub
+-- Optional function to define components used within the plugin
+function GetComponents(props)
+  local components = {}
+  --[[ #include "components.lua" ]]
+  return components
 end
 
-Connect()
+-- Optional function to define wiring of components used within the plugin
+function GetWiring(props)
+  local wiring = {}
+  --[[ #include "wiring.lua" ]]
+  return wiring
+end
+
+-- Defines the Controls used within the plugin
+function GetControls(props)
+  local ctrls = {}
+  --[[ #include "controls.lua" ]]
+  return ctrls
+end
+
+--Layout of controls and graphics for the plugin UI to display
+function GetControlLayout(props)
+  local layout = {}
+  local graphics = {}
+  --[[ #include "layout.lua" ]]
+  return layout, graphics
+end
+
+--Start event based logic
+if Controls then
+  --[[ #include "runtime.lua" ]]
+end
