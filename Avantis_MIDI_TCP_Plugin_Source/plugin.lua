@@ -1,18 +1,17 @@
--- Basic Framework Plugin
--- by QSC
--- October 2020
+-- Allen & Heath Avantis MIDI TCP Plugin
+-- by Q-Sys Plugin Framework
 
 -- Information block for the plugin
 --[[ #include "info.lua" ]]
 
 -- Define the color of the plugin object in the design
 function GetColor(props)
-  return { 102, 102, 102 }
+  return { 153, 0, 76 } -- Allen & Heath brand color
 end
 
 -- The name that will initially display when dragged into a design
 function GetPrettyName(props)
-  return "My First Plugin, version " .. PluginInfo.Version
+  return "Avantis MIDI TCP v" .. PluginInfo.Version
 end
 
 -- Optional function used if plugin has multiple pages
